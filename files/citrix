@@ -76,3 +76,4 @@ sudo mv /etc/yum.conf       /etc/yum.orig
 sudo echo "$YUM_CONF"     > /etc/yum.conf
 sudo echo "$CITRIX_REPO"  > /etc/yum.repos.d.xs/citrix.repo
 sudo echo "$XS_REPO"      > /etc/yum.repos.d.xs/xs.repo
+sudo cp /etc/yum.repos.d/planex-release.repo /etc/yum.repos.d.xs/planex-release.repo

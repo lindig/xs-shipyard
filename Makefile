@@ -1,6 +1,5 @@
 # 
-#
-#
+# Build Docker container for developing XenServer packages
 #
 
 NAME = 	xenserver/xenserver-build-env:lindig
