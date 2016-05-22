@@ -1,8 +1,9 @@
 [xs]
 name=XenServer
-baseurl=@XS_REPO@
+baseurl=http://xs-yum-repos.s3-website-us-east-1.amazonaws.com/449e52a4-271a-483a-baa7-24bf362866f7/domain0
 enabled=1
 gpgcheck=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
 exclude=xenserver-release
+
 

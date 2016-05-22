@@ -1,80 +1,106 @@
+<!-- vim: set ts=2 sw=2 et spell -->
+
 # xenserver-build-env
 
-[![Build status](https://travis-ci.org/xenserver/xenserver-build-env.png?branch=master)](https://travis-ci.org/xenserver/xenserver-build-env)
-
-This docker config and collection of supporting scripts allows for creating
-a docker container to work on and build a XenServer package from an SRPM. It
-will build a Docker container with the right build environment (including some
-useful tools) and then install all of the build-dependencies of the given
-pacakge. You will then be in a chroot from which you can clone and build the
-source.
+This docker configuration provides an environment to build and work on
+XenServer packages. For developers inside Citrix it provides optional
+access to internal repositories.
 
 By default, the container references a yum repository that comes from the
-nightly snapshot uploads to xenserver.org.
+nightly snapshot uploads to [xenserver.org](http://xenserver.org).
 
-## Configuration
+## Building the Container
 
-You'll need to install docker. Follow the instructions for your platform on
-https://www.docker.com/
+You'll need to install Docker. Follow the instructions for your platform
+on [docker.com](https://www.docker.com/).
 
-## Building
+Build the docker image:
 
-Either build the docker image yourself:
+    make
 
-```
-docker build -t xenserver/xenserver-build-env .
-```
+The build takes into account your UID and GID to ensure that files
+shared between host and container have the right identity.
 
-or pull from the Docker Hub:
+The name of the container is:
 
-```
-docker pull xenserver/xenserver-build-env
-```
+    xenserver-build-env:lindig 
 
-## Building packages
+## Developing XenServer Packages – Overview
 
-Install the dependencies of the package using yum:
+XenServer packages are build with `yum` and distributed as source and
+binary RPMs. A package can be either re-build from a source package or
+compiled from its source code on GitHub. This creates different
+scenarios that we are discussing below. 
 
-```sh
-yum-builddep xapi
-```
+Most packages are written in [OCaml]. OCaml projects typically manage
+their dependencies with OCaml's package manager Opam that installs the
+necessary libraries.  This is _not_ the case for the RPM packages here:
+build dependencies are provided by other RPMs and Opam is not used. This
+makes it difficult to use OCaml libraries during development that are
+not provided as RPMs - we will discuss this scenario, too.
 
-then either download the SRPM using yumdownloader:
+## Building a Package from its SRPM
 
-```sh
-yumdownloader --source xapi
-rpmbuild --rebuild xapi*
-```
+Let's assume you want to build [xen-api].  I suggest to mount a local
+directory into the container under `/mnt` although it is not strictly
+necessary.
 
-or clone the source from github or xenbits:
+On the host:
 
-```sh
-git clone git://github.com/xapi-project/xen-api
-cd xen-api
-./configure
-make
-```
+    IMG=xenserver-build-env:lindig
+    docker run -i -t -v $PWD:/mnt $IMG /bin/bash
 
-## Mounting repos from outside the container
-If you'd like to develop using the tools on your host and preseve the changes
-to source and revision control but still use the container for building, you
-can do using by using a docker volume.
+Inside the container:
 
-Once you have built your image you can run it with an extra argument to mount
-a directory from your host to a suitable point inside the container. For
-example, if I clone some repos into a directory on my host, say `/work/code/`,
-then I can mount it inside the container as follows:
+    ./citrix trunk-ring3  # if you work at Citrix
+    cd /mnt               # if you prefer to edit files on the host
+    yumdownloader xen-api
+    rpm -i xen-api*       # installs source package
+    sudo yum-builddep -y yumbuild/SPEC/xen-api.spec
 
-```sh
-docker run -i -t -v /work/code:/mnt/repos -u $(id -u) <IMAGE> /bin/bash
-```
 
-The `-u` flag uses the right UID inside so that changes made in the container
-are with the same UID as outside the container. Docker >=1.6 supports group IDs
-as well and both the group and user can be referenced by name.
 
-Then the following format is available to set the UID/GID:
 
-```sh
--u, --user=                Username or UID (format: <name|uid>[:<group|gid>])
-```
+## Building a Package from GitHub
+
+Let's assume you want to build the [Xen
+API](https//github.com/xapi-project/xen-api) using the Docker container
+you just built.
+
+1.  Clone the project to your local machine:
+
+        git clone git://github.com/xapi-project/xen-api
+
+2.  Start the container and mount the local `xen-api` directory under
+    `/mnt` inside the container:
+
+        cd xen-api
+        IMG=xenserver/xenserver-build-env:lindig
+        docker run -i -t -v $PWD:/mnt $IMG
+
+  Now the code can be edited inside and outside the container.
+
+3.  If you are a developer at Citrix, you might want to use a 
+    local branch; set it up inside the container:
+
+        ./citrix trunk-ring3
+
+4.  Inside the container, install the dependencies for the `xen-api`
+    package:
+
+        sudo yum-builddep xen-api
+
+5.  Inside the container, build the package:
+
+        cd /mnt
+        ./configure 
+        make
+  
+    Changes made inside `/mnt` are reflected on the local machine and vice
+    versa. Hence, you can use the editor and tools on your local machine
+    to work with the code inside the container.
+
+## 
+
+[xen-api]:  http://github.com/xapi-project/xen-api
+[OCaml]:    http://www.ocaml.org/

@@ -1,16 +1,13 @@
-FROM                                   centos:7.2.1511
-MAINTAINER                             John Else <john.else@citrix.com>
+FROM                                    centos:7.2.1511
+MAINTAINER                              John Else <john.else@citrix.com>
 
-# Update yum.conf - not default!
-COPY    files/yum.conf.xs              /etc/yum.conf.xs
+# set up yum repo
+COPY    files/RPM-GPG-KEY-Citrix-6.6    /etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
+COPY    files/xs.repo                   /etc/yum.repos.d
 
-# Add the Citrix yum repo and GPG key
-RUN     mkdir -p /etc/yum.repos.d.xs
-COPY    files/Citrix.repo.in           /tmp/Citrix.repo.in
-COPY    files/RPM-GPG-KEY-Citrix-6.6   /etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
+# OCaml in XS is slightly older than in CentOS
+RUN     sed -i "/gpgkey/a exclude=ocaml*" /etc/yum.repos.d/Cent* /etc/yum.repos.d/epel*
 
-# Add the publicly available repo
-COPY    files/xs.repo.in /tmp/xs.repo.in
 
 # Build requirements
 RUN     yum install -y \
@@ -39,8 +36,6 @@ RUN     yum -y install https://xenserver.github.io/planex-release/release/rpm/el
 RUN     cp /etc/yum.repos.d/planex-release.repo /etc/yum.repos.d.xs/planex-release.repo
 RUN     yum -y install planex
 
-# OCaml in XS is slightly older than in CentOS
-RUN     sed -i "/gpgkey/a exclude=ocaml*" /etc/yum.repos.d/Cent* /etc/yum.repos.d/epel*
 
 # Let's have aspcud
 RUN     yum install -y \
@@ -48,25 +43,27 @@ RUN     yum install -y \
             http://download.opensuse.org/repositories/home:/ocaml/CentOS_7/x86_64/clasp-3.0.1-4.1.x86_64.rpm \
             http://download.opensuse.org/repositories/home:/ocaml/CentOS_7/x86_64/gringo-4.3.0-10.1.x86_64.rpm
 
-RUN     mkdir -p /usr/local/bin
-COPY    files/init-container.sh        /usr/local/bin/init-container.sh
-
-
+# override these when building the container
+# docker build --build-arg uid=$(id -u) --build-arg gid=$(id -g) .
+ARG uid=1000
+ARG gid=1000
 
 RUN echo 'builder ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/builder 
 RUN chmod 440 /etc/sudoers.d/builder 
 RUN chown root:root /etc/sudoers.d/builder 
 RUN sed -i.bak 's/^Defaults.*requiretty//g' /etc/sudoers 
-RUN useradd -d /home/builder -u 501 -m -s /bin/bash builder
+RUN groupadd -f -g $gid builder
+RUN useradd -d /home/builder -u $uid -g builder -m -s /bin/bash builder
 RUN passwd -l builder 
 RUN chown -R builder:builder /home/builder
 RUN usermod -G mock builder
 
-# Set up the builder user
+# now become user builder
 USER    builder
 ENV     HOME /home/builder
 WORKDIR /home/builder
-CMD     [ "bash" ]
+COPY    files/citrix .
+CMD     [ "/bin/bash" ]
 
 
 

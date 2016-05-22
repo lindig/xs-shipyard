@@ -2,12 +2,57 @@
 #
 # citrix [branch]
 #
-# Set up yum repos for Citrix-internal branch.
+# Set up yum repos for Citrix-internal branch. This overwrites
+# /etc/yum.conf with a new configuration.
 #
 
 XS_BRANCH=${1:-trunk-ring3}
 
-REPO="
+YUM_CONF="
+[main]
+cachedir=/tmp/yum
+keepcache=0
+debuglevel=2
+logfile=/var/log/yum.log
+exactarch=1
+obsoletes=1
+gpgcheck=0
+plugins=1
+installonly_limit=3
+reposdir=/etc/yum.repos.d.xs
+"
+
+XS_REPO="
+[epel]
+name = epel
+enabled = 1
+baseurl = https://repo.citrite.net/fedora/epel/7/x86_64/
+exclude = ocaml*
+gpgcheck = 0
+
+[base]
+name = base
+enabled = 1
+baseurl = https://repo.citrite.net/centos/7.2.1511/os/x86_64/
+exclude = ocaml*
+gpgcheck = 0
+
+[updates]
+name = updates
+enabled = 1
+baseurl = https://repo.citrite.net/centos/7.2.1511/os/x86_64/
+exclude = ocaml*
+gpgcheck = 0
+
+[extras]
+name = extras
+enabled = 1
+baseurl = https://repo.citrite.net/centos/7.2.1511/os/x86_64/
+exclude = ocaml*
+gpgcheck = 0
+"
+
+CITRIX_REPO="
 [citrix]
 name=XenServer 6.6 updates
 baseurl=http://coltrane.uk.xensource.com/usr/groups/build/${XS_BRANCH}/latest/binary-packages/RPMS/domain0/RPMS/
@@ -25,6 +70,9 @@ enabled=1
 exclude=kernel-headers
 "
 
-sudo mv /etc/yum.conf /etc/yum.conf.backup
-sudo mv /etc/yum.conf.xs /etc/yum.conf
-sudo echo "$REPO" > /etc/yum.repos.d.xs/Citrix.repo
+# Citrix
+sudo mkdir -p               /etc/yum.repos.d.xs
+sudo mv /etc/yum.conf       /etc/yum.orig
+sudo echo "$YUM_CONF"     > /etc/yum.conf
+sudo echo "$CITRIX_REPO"  > /etc/yum.repos.d.xs/citrix.repo
+sudo echo "$XS_REPO"      > /etc/yum.repos.d.xs/xs.repo
