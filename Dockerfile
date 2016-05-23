@@ -3,7 +3,7 @@ MAINTAINER                              John Else <john.else@citrix.com>
 
 # set up yum repo
 COPY    files/RPM-GPG-KEY-Citrix-6.6    /etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
-COPY    files/xs.repo                   /etc/yum.repos.d
+COPY    files/xs.repo                   /etc/yum.repos.d/xs.repo
 
 # Build requirements
 RUN     yum install -y \
