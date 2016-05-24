@@ -1,9 +1,13 @@
 FROM                                    centos:7.2.1511
 MAINTAINER                              John Else <john.else@citrix.com>
 
+# provide this as an argument when building the container
+ARG baseurl=http://localhost
+
 # set up yum repo
 COPY    files/RPM-GPG-KEY-Citrix-6.6    /etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
 COPY    files/xs.repo                   /etc/yum.repos.d/xs.repo
+RUN			sed -i.bak "s!baseurl=!baseurl=$baseurl!" /etc/yum.repos.d/xs.repo
 
 # Build requirements
 RUN     yum install -y \

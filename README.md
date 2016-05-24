@@ -3,11 +3,10 @@
 # xenserver-build-env
 
 This docker configuration provides an environment to build and work on
-XenServer packages. For developers inside Citrix it provides optional
-access to internal repositories.
-
-By default, the container references a yum repository that comes from the
-nightly snapshot uploads to [xenserver.org](http://xenserver.org).
+XenServer packages.  By default, the container references a yum
+repository that comes from the nightly snapshot uploads to
+[xenserver.org](http://xenserver.org).  For developers inside Citrix it
+provides optional access to internal repositories.
 
 ## Building the Container
 
@@ -98,6 +97,8 @@ package. Typically one would use the OCaml package manager Opam to
 install it. However, Opam does not interact nicely with Yum.
     
 ## Using Opam
+
+This is work in progress; explanation is forthcoming.
 
     sudo yum -y install ocaml
     sudo yum -y install ocaml-findlib-devel
