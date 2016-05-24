@@ -53,8 +53,8 @@ On the host:
 
 Inside the container
 
-    ./citrix trunk-ring3  # if you work at Citrix
-    cd /mnt               # if you prefer to edit files on the host
+    sudo ./citrix trunk-ring3		# if you work at Citrix
+    cd /mnt											# if you prefer to edit files on the host
 
     sudo yum-builddep xenopsd
     yumdownloader --source xenopsd
@@ -76,7 +76,7 @@ Inside the container:
 
 The code is available under `/mnt`.
     
-    ./citrix trunk-ring3  # if you work at Citrix
+    sudo ./citrix trunk-ring3  # if you work at Citrix
     sudo yum-builddep xenopsd
 
     cd /mnt               
