@@ -27,9 +27,9 @@ The name of the container is:
 
 ## Developing XenServer Packages – Overview
 
-XenServer packages are build with `yum` and distributed as source and
-binary RPMs. A package can be either re-build from a source package or
-compiled from its source code on GitHub. This creates different
+XenServer packages are build with Yum and distributed as source as well
+as binary RPMs. A package can be either re-build from a source package
+or compiled from its source code on GitHub. This creates different
 scenarios that we are discussing below. 
 
 Most packages are written in [OCaml]. OCaml projects typically manage
@@ -37,70 +37,74 @@ their dependencies with OCaml's package manager Opam that installs the
 necessary libraries.  This is _not_ the case for the RPM packages here:
 build dependencies are provided by other RPMs and Opam is not used. This
 makes it difficult to use OCaml libraries during development that are
-not provided as RPMs - we will discuss this scenario, too.
+not provided as Yum packages (RPMs) - we will discuss this scenario,
+too.
 
 ## Building a Package from its SRPM
 
-Let's assume you want to build [xen-api].  I suggest to mount a local
-directory into the container under `/mnt` although it is not strictly
-necessary.
+Let's assume you want to build [xenopsd] from its source code package.
+I suggest to mount a local directory into the container under `/mnt`
+although it is not strictly necessary.
 
 On the host:
 
     IMG=xenserver-build-env:lindig
     docker run -i -t -v $PWD:/mnt $IMG /bin/bash
 
-Inside the container:
+Inside the container
 
     ./citrix trunk-ring3  # if you work at Citrix
     cd /mnt               # if you prefer to edit files on the host
-    yumdownloader xen-api
-    rpm -i xen-api*       # installs source package
-    sudo yum-builddep -y yumbuild/SPEC/xen-api.spec
 
-
-
-
+    sudo yum-builddep xenopsd
+    yumdownloader --source xenopsd
+    rpm -i xenopsd*       # installs source package into ./rpmbuild/
+    # the souce code is in rpmbuild/BUILD/xenopsd*
+    rpmbuild -ba rpmbuild/SPECS/xenopsd.spec # builds it as a package
+    
 ## Building a Package from GitHub
 
-Let's assume you want to build the [Xen
-API](https//github.com/xapi-project/xen-api) using the Docker container
-you just built.
+Let's assume you want to build [xenopsd] from its sources on GitHub.
 
-1.  Clone the project to your local machine:
+On the host:
+    
+    git clone git://github.com/xapi-project/xenopsd.git
+    IMG=xenserver-build-env:lindig
+    docker run -i -t -v $PWD:/mnt $IMG /bin/bash
 
-        git clone git://github.com/xapi-project/xen-api
+Inside the container:
 
-2.  Start the container and mount the local `xen-api` directory under
-    `/mnt` inside the container:
+The code is available under `/mnt`.
+    
+    ./citrix trunk-ring3  # if you work at Citrix
+    sudo yum-builddep xenopsd
 
-        cd xen-api
-        IMG=xenserver/xenserver-build-env:lindig
-        docker run -i -t -v $PWD:/mnt $IMG
+    cd /mnt               
+    ./configure
+    make
 
-  Now the code can be edited inside and outside the container.
+You can change the code and use Git to manage changes. Changes become
+visible outside the container.
 
-3.  If you are a developer at Citrix, you might want to use a 
-    local branch; set it up inside the container:
+This method relies on the installation of all dependencies with
+`yum-builddep` before building the package with `make`.  If you extend
+the code and need additional packages, you have to install them with
+yum:
 
-        ./citrix trunk-ring3
+    sudo yum -y install ocaml-bisect-ppx-devel
 
-4.  Inside the container, install the dependencies for the `xen-api`
-    package:
+A problem arises if you need a package that is not yet available as a Yum
+package. Typically one would use the OCaml package manager Opam to
+install it. However, Opam does not interact nicely with Yum.
+    
+## Using Opam
 
-        sudo yum-builddep xen-api
+    sudo yum -y install ocaml
+    sudo yum -y install ocaml-findlib-devel
+    sudo yum -y install opam
+    opam init
+    eval $(opam config env)
+    sed -i.bak '/path/s!"$!:/home/builder/.opam/system/lib"!'
 
-5.  Inside the container, build the package:
-
-        cd /mnt
-        ./configure 
-        make
-  
-    Changes made inside `/mnt` are reflected on the local machine and vice
-    versa. Hence, you can use the editor and tools on your local machine
-    to work with the code inside the container.
-
-## 
-
-[xen-api]:  http://github.com/xapi-project/xen-api
+[xenopsd]:  http://github.com/xapi-project/xenopsd 
 [OCaml]:    http://www.ocaml.org/

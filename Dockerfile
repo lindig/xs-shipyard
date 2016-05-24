@@ -59,7 +59,7 @@ RUN usermod -G mock builder
 USER    builder
 ENV     HOME /home/builder
 WORKDIR /home/builder
-COPY    files/citrix .
+COPY    files/citrix citrix
 CMD     [ "/bin/bash" ]
 
 
