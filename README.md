@@ -22,14 +22,14 @@ shared between host and container have the right identity.
 
 The name of the container is:
 
-    xenserver-build-env:lindig 
+    xenserver-build-env:lindig
 
 ## Developing XenServer Packages – Overview
 
 XenServer packages are build with Yum and distributed as source as well
 as binary RPMs. A package can be either re-build from a source package
 or compiled from its source code on GitHub. This creates different
-scenarios that we are discussing below. 
+scenarios that we are discussing below.
 
 Most packages are written in [OCaml]. OCaml projects typically manage
 their dependencies with OCaml's package manager Opam that installs the
@@ -52,21 +52,21 @@ On the host:
 
 Inside the container
 
-    sudo ./citrix trunk-ring3		# if you work at Citrix
-    cd /mnt											# if you prefer to edit files on the host
+    sudo ./citrix trunk-ring3           # if you work at Citrix
+    cd /mnt             # if you prefer to edit files on the host
 
     sudo yum-builddep xenopsd
     yumdownloader --source xenopsd
     rpm -i xenopsd*       # installs source package into ./rpmbuild/
     # the souce code is in rpmbuild/BUILD/xenopsd*
     rpmbuild -ba rpmbuild/SPECS/xenopsd.spec # builds it as a package
-    
+
 ## Building a Package from GitHub
 
 Let's assume you want to build [xenopsd] from its sources on GitHub.
 
 On the host:
-    
+
     git clone git://github.com/xapi-project/xenopsd.git
     IMG=xenserver-build-env:lindig
     docker run -i -t -v $PWD:/mnt $IMG /bin/bash
@@ -74,11 +74,11 @@ On the host:
 Inside the container:
 
 The code is available under `/mnt`.
-    
+
     sudo ./citrix trunk-ring3  # if you work at Citrix
     sudo yum-builddep xenopsd
 
-    cd /mnt               
+    cd /mnt
     ./configure
     make
 
@@ -95,7 +95,7 @@ yum:
 A problem arises if you need a package that is not yet available as a Yum
 package. Typically one would use the OCaml package manager Opam to
 install it. However, Opam does not interact nicely with Yum.
-    
+
 ## Using Opam
 
 This is work in progress; explanation is forthcoming.
@@ -107,5 +107,5 @@ This is work in progress; explanation is forthcoming.
     eval $(opam config env)
     sed -i.bak '/path/s!"$!:/home/builder/.opam/system/lib"!'
 
-[xenopsd]:  http://github.com/xapi-project/xenopsd 
+[xenopsd]:  http://github.com/xapi-project/xenopsd
 [OCaml]:    http://www.ocaml.org/

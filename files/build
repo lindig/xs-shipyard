@@ -1,0 +1,14 @@
+#! /bin/bash
+#
+# usage: build xenopsd
+# 
+# This downloads and builds a yum package. 
+#
+
+package=${1:?}
+
+sudo yum-builddep -y ${package}
+yumdownloader --source ${package}
+rpm -i ${package}*
+rpmbuild -ba rpmbuild/SPECS/${package}.spec
+

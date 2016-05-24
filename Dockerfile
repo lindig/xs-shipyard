@@ -64,6 +64,7 @@ USER    builder
 ENV     HOME /home/builder
 WORKDIR /home/builder
 COPY    files/citrix citrix
+COPY	files/build build
 CMD     [ "/bin/bash" ]
 
 
