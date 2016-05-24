@@ -7,7 +7,7 @@ BASE = 'aHR0cDovL3hzLXl1bS1yZXBvcy5zMy13ZWJzaXRlLXVzLWVhc3QtMS5hbWF6b25hd3MuY29t
 NAME = 	xenserver/xenserver-build-env:lindig
 ARGS += --build-arg uid=$$(id -u)
 ARGS += --build-arg gid=$$(id -g)
-ARGS += --build-arg baseurl=$$(echo $(BASE) | base64 -d)
+ARGS += --build-arg baseurl=$$(echo $(BASE) | base64 --decode)
 
 all:	Dockerfile
 	docker build -t $(NAME) $(ARGS) .
