@@ -7,13 +7,16 @@
 
 set -e 
 
+# this must match the %_topdir RPM macro
+topdir=${TOPDIR:-/mnt/rpmbuild}
+
 build()
 {
   package="$1"
   sudo yum-builddep -y ${package}
   yumdownloader --source ${package}
   rpm -i ${package}*
-  rpmbuild -ba rpmbuild/SPECS/${package}.spec
+  rpmbuild -ba ${topdir}/SPECS/${package}.spec
 }
 
 for p in $@; do

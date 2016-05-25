@@ -50,7 +50,7 @@ although it is not strictly necessary.
 On the host:
 
     IMG=xenserver-build-env:lindig
-    docker run -i -t -v $PWD:/mnt $IMG /bin/bash
+    docker run -i -t -v $PWD:/mnt $IMG 
 
 Inside the container
 
@@ -62,9 +62,12 @@ The `build` script executes these steps that you could also do manually:
     sudo yum-builddep xenopsd
     yumdownloader --source xenopsd
     rpm -i xenopsd*  
-    rpmbuild -ba rpmbuild/SPECS/xenopsd.spec # builds it as a package
+    rpmbuild -ba /mnt/rpmbuild/SPECS/xenopsd.spec # builds it as a package
 
-The results are under $HOME/rpmbuild:
+The results are under /mnt/rpmbuild -- see below. Usually rmp creates
+`$HOME/rpmbuild` but we are using a modified `%_topdir /mnt/rpmbuild`
+definition (in `$HOME/,rpmmacros`) to direct the RPM hierarchy to `/mnt`
+which can be shared with the host.
 
     New RPMs built
     ./RPMS/x86_64/xenopsd-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
@@ -99,7 +102,7 @@ On the host:
 
     git clone git://github.com/xapi-project/xenopsd.git
     IMG=xenserver-build-env:lindig
-    docker run -i -t -v $PWD:/mnt $IMG /bin/bash
+    docker run -i -t -v $PWD:/mnt $IMG 
 
 Inside the container:
 

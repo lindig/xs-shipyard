@@ -63,6 +63,7 @@ RUN usermod -G mock builder
 WORKDIR /home/builder
 COPY    files/citrix citrix
 COPY    files/build build
+COPY    files/rpmmacros .rpmmacros
 RUN     chown -R builder:builder /home/builder
 
 # now become user builder
