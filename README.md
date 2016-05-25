@@ -4,9 +4,9 @@
 
 # xenserver-build-env
 
-This [Docker] configuration provides an environment for building and
-working on XenServer packages.  By default, the container uses a
-yum repository that comes from the nightly snapshot uploads to
+This [Docker] configuration provides an environment for building
+XenServer packages.  By default, the container uses a Yum repository
+that comes from the nightly snapshot uploads to
 [xenserver.org](http://xenserver.org).  For developers inside Citrix it
 provides optional access to internal repositories.
 
@@ -47,12 +47,12 @@ Let's assume you want to build [xenopsd] from its source code package.
 I suggest to mount a local directory into the container under `/mnt`
 although it is not strictly necessary.
 
-On the host:
+On the host, do:
 
     IMG=xenserver-build-env:lindig
     docker run -i -t -v $PWD:/mnt $IMG
 
-Inside the container
+Inside the container, do:
 
     sudo ./citrix trunk-ring3           # if you work at Citrix
     ./build xenopds
@@ -64,9 +64,9 @@ The `build` script executes these steps that you could also do manually:
     rpm -i xenopsd*
     rpmbuild -ba /mnt/rpmbuild/SPECS/xenopsd.spec # builds it as a package
 
-The results are under /mnt/rpmbuild -- see below. Usually rmp creates
+The results are under /mnt/rpmbuild -- see below. Usually `rpm` creates
 `$HOME/rpmbuild` but we are using a modified `%_topdir /mnt/rpmbuild`
-definition (in `$HOME/,rpmmacros`) to direct the RPM hierarchy to `/mnt`
+definition (in `$HOME/.rpmmacros`) to direct the RPM hierarchy to `/mnt`
 which can be shared with the host.
 
     New RPMs built
@@ -98,13 +98,13 @@ which can be shared with the host.
 
 Let's assume you want to build [xenopsd] from its sources on GitHub.
 
-On the host:
+On the host, do:
 
     git clone git://github.com/xapi-project/xenopsd.git
     IMG=xenserver-build-env:lindig
     docker run -i -t -v $PWD:/mnt $IMG
 
-Inside the container:
+Inside the container, do:
 
 The code is available under `/mnt`.
 
@@ -136,12 +136,21 @@ install it. However, Opam does not interact nicely with Yum.
 
 This is work in progress; explanation is forthcoming.
 
+To set up [OCaml] with Opam inside the container, do:
+
     sudo yum -y install ocaml
     sudo yum -y install ocaml-findlib-devel
     sudo yum -y install opam
     opam init
     eval $(opam config env)
-    sed -i.bak '/path/s!"$!:/home/builder/.opam/system/lib"!'
+    sed -i.bak '/path/s!"$!:/home/builder/.opam/system/lib"!' /etc/ocamlfind.conf
+
+The last line ensures that [OCaml] packages (and libraries) installed
+via Yum and those installed via Opam are both visible to OCamlfind, which
+is responsible for locating libraries for the compiler. The `sed`
+command extends the search path for libraries. You can now install
+additional libraries and tools from the Opam ecosystem.
+
 
 [Docker]:   https://www.docker.com/
 [xenopsd]:  http://github.com/xapi-project/xenopsd
