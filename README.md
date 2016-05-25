@@ -55,7 +55,9 @@ On the host:
 Inside the container
 
     sudo ./citrix trunk-ring3           # if you work at Citrix
-    cd /mnt             # if you prefer to edit files on the host
+    ./build xenopds
+
+The `build` script executes these steps that you could also do manually:
 
     sudo yum-builddep xenopsd
     yumdownloader --source xenopsd
