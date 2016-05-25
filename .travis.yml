@@ -6,4 +6,4 @@ before_install:
   - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine
 script:
   - make
-  - docker run -t xenserver/xenserver-build-env:lindig ./build xenopsd
+  - docker run -t -v $PWD:/mnt xenserver/xenserver-build-env:lindig ./build xenopsd
