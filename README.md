@@ -22,13 +22,13 @@ Build the docker image:
 The build takes into account your UID and GID to ensure that files
 shared between host and container have the right identity.
 
-The name of the container is:
+The name of the container image is:
 
     xenserver-build-env:lindig
 
-## Developing XenServer Packages – Overview
+## Developing XenServer Packages - Overview
 
-XenServer packages are build with Yum and distributed as source as well
+XenServer packages are built with Yum and distributed as source as well
 as binary RPMs. A package can be either re-build from a source package
 or compiled from its source code on GitHub. This creates different
 scenarios that we are discussing below.
@@ -61,9 +61,35 @@ The `build` script executes these steps that you could also do manually:
 
     sudo yum-builddep xenopsd
     yumdownloader --source xenopsd
-    rpm -i xenopsd*       # installs source package into ./rpmbuild/
-    # the souce code is in rpmbuild/BUILD/xenopsd*
+    rpm -i xenopsd*  
     rpmbuild -ba rpmbuild/SPECS/xenopsd.spec # builds it as a package
+
+The results are under $HOME/rpmbuild:
+
+    New RPMs built
+    ./RPMS/x86_64/xenopsd-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
+    ./RPMS/x86_64/xenopsd-debuginfo-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
+    ./RPMS/x86_64/xenopsd-simulator-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
+    ./RPMS/x86_64/xenopsd-xc-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
+    ./RPMS/x86_64/xenopsd-xc-cov-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
+    ./RPMS/x86_64/xenopsd-xenlight-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
+
+    Build directory with all code
+    ./BUILD/xenopsd-0.12.1/.......
+   
+    ./SOURCES/xenopsd-0.12.0+107+ge1ebb93.tar.gz
+    ./SOURCES/xenopsd-64-conf
+    ./SOURCES/xenopsd-conf
+    ./SOURCES/xenopsd-libvirt-init
+    ./SOURCES/xenopsd-network-conf
+    ./SOURCES/xenopsd-simulator-init
+    ./SOURCES/xenopsd-xc-init
+    ./SOURCES/xenopsd-xenlight-init
+    
+    ./SPECS/xenopsd.spec
+    
+    ./SRPMS/xenopsd-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.src.rpm
+      
 
 ## Building a Package from GitHub
 
