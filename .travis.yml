@@ -1,11 +1,7 @@
-language: python
+language: c
 sudo: required
 services:
   - docker
-install:
-  - pip install pep8
-  - pip install pylint
 script:
-  - pep8 --show-source --show-pep8 run.py
-  - pylint run.py
-  - ./test/travis-test.sh
+  - make
+  - docker run -t xenserver/xenserver-build-env:lindig ./build xenopsd

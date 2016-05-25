@@ -60,14 +60,16 @@ RUN useradd -d /home/builder -u $uid -g builder -m -s /bin/bash builder
 RUN passwd -l builder 
 RUN usermod -G mock builder
 
-# now become user builder
-USER    builder
-ENV     HOME /home/builder
 WORKDIR /home/builder
 COPY    files/citrix citrix
 COPY    files/build build
 RUN     chown -R builder:builder /home/builder
-CMD     [ "/bin/bash" ]
+
+# now become user builder
+USER    builder
+ENV     HOME /home/builder
+ENTRYPOINT ["/bin/bash"]
+CMD ["--"]
 
 
 

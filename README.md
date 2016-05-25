@@ -1,5 +1,7 @@
 <!-- vim: set ts=2 sw=2 et spell -->
 
+[![Build Status](https://travis-ci.org/lindig/xenserver-build-env.svg?branch=lindig)](https://travis-ci.org/lindig/xenserver-build-env)
+
 # xenserver-build-env
 
 This docker configuration provides an environment to build and work on
