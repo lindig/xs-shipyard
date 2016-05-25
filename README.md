@@ -4,15 +4,15 @@
 
 # xenserver-build-env
 
-This docker configuration provides an environment to build and work on
-XenServer packages.  By default, the container references a yum
-repository that comes from the nightly snapshot uploads to
+This [Docker] configuration provides an environment for building and
+working on XenServer packages.  By default, the container uses a
+yum repository that comes from the nightly snapshot uploads to
 [xenserver.org](http://xenserver.org).  For developers inside Citrix it
 provides optional access to internal repositories.
 
 ## Building the Container
 
-You'll need to install Docker. Follow the instructions for your platform
+You'll need to install [Docker]. Follow the instructions for your platform
 on [docker.com](https://www.docker.com/).
 
 Build the docker image:
@@ -29,7 +29,7 @@ The name of the container image is:
 ## Developing XenServer Packages - Overview
 
 XenServer packages are built with Yum and distributed as source as well
-as binary RPMs. A package can be either re-build from a source package
+as binary RPMs. A package can be either re-built from a source package
 or compiled from its source code on GitHub. This creates different
 scenarios that we are discussing below.
 
@@ -111,6 +111,9 @@ The code is available under `/mnt`.
     sudo ./citrix trunk-ring3  # if you work at Citrix
     sudo yum-builddep xenopsd
 
+The last step installs the dependencies. It assumes that the code in the
+GitHub repository doesn't need additional packages.
+
     cd /mnt
     ./configure
     make
@@ -140,5 +143,6 @@ This is work in progress; explanation is forthcoming.
     eval $(opam config env)
     sed -i.bak '/path/s!"$!:/home/builder/.opam/system/lib"!'
 
+[Docker]:   https://www.docker.com/
 [xenopsd]:  http://github.com/xapi-project/xenopsd
 [OCaml]:    http://www.ocaml.org/
