@@ -1,14 +1,21 @@
 #! /bin/bash
 #
-# usage: build xenopsd
+# usage: build xenopsd ...
 # 
-# This downloads and builds a yum package. 
+# This downloads and builds yum packages. 
 #
 
-package=${1:?}
+set -e 
 
-sudo yum-builddep -y ${package}
-yumdownloader --source ${package}
-rpm -i ${package}*
-rpmbuild -ba rpmbuild/SPECS/${package}.spec
+build()
+{
+  package="$1"
+  sudo yum-builddep -y ${package}
+  yumdownloader --source ${package}
+  rpm -i ${package}*
+  rpmbuild -ba rpmbuild/SPECS/${package}.spec
+}
 
+for p in $@; do
+  build "$p"
+done
