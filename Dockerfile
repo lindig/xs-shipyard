@@ -51,14 +51,15 @@ RUN     yum install -y \
 ARG uid=1000
 ARG gid=1000
 
-RUN echo 'builder ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/builder 
-RUN chmod 440 /etc/sudoers.d/builder 
-RUN chown root:root /etc/sudoers.d/builder 
-RUN sed -i.bak 's/^Defaults.*requiretty//g' /etc/sudoers 
-RUN groupadd -f -g $gid builder
-RUN useradd -d /home/builder -u $uid -g builder -m -s /bin/bash builder
-RUN passwd -l builder 
-RUN usermod -G mock builder
+RUN echo 'builder ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/builder \
+&&  chmod 440 /etc/sudoers.d/builder \
+&&  chown root:root /etc/sudoers.d/builder \
+&&  sed -i.bak 's/^Defaults.*requiretty//g' /etc/sudoers \
+&&  groupadd -f -g $gid builder \
+&&  useradd -d /home/builder -u $uid -g builder -m -s /bin/bash builder \
+&&  passwd -l builder \
+&&  usermod -G mock builder \
+&&  :
 
 WORKDIR /home/builder
 COPY    files/citrix citrix
