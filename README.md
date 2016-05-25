@@ -50,7 +50,7 @@ although it is not strictly necessary.
 On the host:
 
     IMG=xenserver-build-env:lindig
-    docker run -i -t -v $PWD:/mnt $IMG 
+    docker run -i -t -v $PWD:/mnt $IMG
 
 Inside the container
 
@@ -61,7 +61,7 @@ The `build` script executes these steps that you could also do manually:
 
     sudo yum-builddep xenopsd
     yumdownloader --source xenopsd
-    rpm -i xenopsd*  
+    rpm -i xenopsd*
     rpmbuild -ba /mnt/rpmbuild/SPECS/xenopsd.spec # builds it as a package
 
 The results are under /mnt/rpmbuild -- see below. Usually rmp creates
@@ -79,7 +79,7 @@ which can be shared with the host.
 
     Build directory with all code
     ./BUILD/xenopsd-0.12.1/.......
-   
+
     ./SOURCES/xenopsd-0.12.0+107+ge1ebb93.tar.gz
     ./SOURCES/xenopsd-64-conf
     ./SOURCES/xenopsd-conf
@@ -88,11 +88,11 @@ which can be shared with the host.
     ./SOURCES/xenopsd-simulator-init
     ./SOURCES/xenopsd-xc-init
     ./SOURCES/xenopsd-xenlight-init
-    
+
     ./SPECS/xenopsd.spec
-    
+
     ./SRPMS/xenopsd-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.src.rpm
-      
+
 
 ## Building a Package from GitHub
 
@@ -102,7 +102,7 @@ On the host:
 
     git clone git://github.com/xapi-project/xenopsd.git
     IMG=xenserver-build-env:lindig
-    docker run -i -t -v $PWD:/mnt $IMG 
+    docker run -i -t -v $PWD:/mnt $IMG
 
 Inside the container:
 

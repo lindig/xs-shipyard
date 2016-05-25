@@ -69,8 +69,8 @@ RUN     chown -R builder:builder /home/builder
 # now become user builder
 USER    builder
 ENV     HOME /home/builder
-ENTRYPOINT ["/bin/bash"]
-CMD ["--"]
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["exec /bin/bash -l"]
 
 
 
