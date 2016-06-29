@@ -1,0 +1,152 @@
+#! /bin/bash
+#
+# yum-setup [--citrix] [branch]
+#
+# Set up yum repos. This overwrites /etc/yum.conf with a new
+# configuration.
+#
+
+set -e
+
+CITRIX="${CITRIX:-NO}"
+BRANCH="${BRANCH:-trunk-ring3}"
+BASE="aHR0cDovL3hzLXl1bS1yZXBvcy5zMy13ZWJzaXRlLXVzLWVhc3QtMS5hbWF6b25hd3MuY29tCg=="
+BASE=$(echo $BASE | base64 --decode)
+YUM="$BASE/449e52a4-271a-483a-baa7-24bf362866f7/domain0"
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
+while [[ $# -ge 1 ]]; do
+  echo "$@"
+  case "$1" in
+    -c|-citrix|--citrix)
+      CITRIX=YES
+      shift
+      ;;
+    trunk-pvs-direct)
+      YUM="$BASE/9bcb8f28-3d43-11e6-ac31-0b94fe7a34b7/domain0"
+      BRANCH="$1"
+      shift
+      ;;
+    *)
+      BRANCH="$1"
+      shift
+      ;;
+  esac
+done
+
+echo "$CITRIX" "$BRANCH" "$YUM"
+
+YUM_CONF_PUBLIC='
+[main]
+cachedir=/var/cache/yum/$basearch/$releasever
+keepcache=0
+debuglevel=2
+logfile=/var/log/yum.log
+exactarch=1
+obsoletes=1
+gpgcheck=1
+plugins=1
+installonly_limit=5
+bugtracker_url=http://bugs.centos.org/set_project.php?project_id=23&ref=http://bugs.centos.org/bug_report_page.php?category=yum
+distroverpkg=centos-release
+override_install_langs=en_US.UTF-8
+tsflags=nodocs
+'
+
+YUM_CONF_CITRIX="
+[main]
+cachedir=/tmp/yum
+keepcache=0
+debuglevel=2
+logfile=/var/log/yum.log
+exactarch=1
+obsoletes=1
+gpgcheck=0
+plugins=1
+installonly_limit=3
+reposdir=/etc/yum.repos.d.xs
+"
+
+XS_REPO_CITRIX="
+[epel]
+name = epel
+enabled = 1
+baseurl = https://repo.citrite.net/fedora/epel/7/x86_64/
+exclude = ocaml*
+gpgcheck = 0
+
+[base]
+name = base
+enabled = 1
+baseurl = https://repo.citrite.net/centos/7.2.1511/os/x86_64/
+exclude = ocaml*
+gpgcheck = 0
+
+[updates]
+name = updates
+enabled = 1
+baseurl = https://repo.citrite.net/centos/7.2.1511/os/x86_64/
+exclude = ocaml*
+gpgcheck = 0
+
+[extras]
+name = extras
+enabled = 1
+baseurl = https://repo.citrite.net/centos/7.2.1511/os/x86_64/
+exclude = ocaml*
+gpgcheck = 0
+"
+
+XS_REPO_PUBLIC="
+[xs]
+name=XenServer
+baseurl=$YUM
+enabled=1
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
+exclude=xenserver-release
+"
+
+CITRIX_REPO="
+[citrix]
+name=XenServer 6.6 updates
+baseurl=http://coltrane.uk.xensource.com/usr/groups/build/${BRANCH}/latest/binary-packages/RPMS/domain0/RPMS/
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
+enabled=1
+exclude=kernel-headers
+
+[citrix-source]
+name=XenServer 6.6 updates
+baseurl=http://coltrane.uk.xensource.com/usr/groups/build/${BRANCH}/latest/binary-packages/RPMS/domain0/SRPMS/
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
+enabled=1
+exclude=kernel-headers
+"
+
+
+# write configuration files
+
+B=${B:-}
+
+case "$CITRIX" in
+  YES|yes)
+    mkdir -p                  $B/etc/yum.repos.d.xs
+    echo "$YUM_CONF_CITRIX" > $B/etc/yum.conf
+    echo "$XS_REPO_CITRIX"  > $B/etc/yum.repos.d.xs/xs.repo
+    echo "$CITRIX_REPO"     > $B/etc/yum.repos.d.xs/citrix.repo
+    cp  $B/etc/yum.repos.d/planex-release.repo \
+        $B/etc/yum.repos.d.xs/planex-release.repo
+    ;;
+  NO|no|*)
+    mkdir -p                  $B/etc/yum.repos.d
+    echo "$YUM_CONF_PUBLIC" > $B/etc/yum.conf
+    echo "$XS_REPO_PUBLIC"  > $B/etc/yum.repos.d/xs.repo
+    ;;
+esac
+
