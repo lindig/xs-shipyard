@@ -5,3 +5,4 @@ John Else <john.else@citrix.com>
 Jon Ludlam <jonathan.ludlam@citrix.com>
 Rob Hoes <rob.hoes@citrix.com>
 Si Beaumont <simon.beaumont@citrix.com>
+Christian Lindig <christian.lindig@citrix.com>

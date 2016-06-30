@@ -38,8 +38,6 @@ while [[ $# -ge 1 ]]; do
   esac
 done
 
-echo "$CITRIX" "$BRANCH" "$YUM"
-
 YUM_CONF_PUBLIC='
 [main]
 cachedir=/var/cache/yum/$basearch/$releasever

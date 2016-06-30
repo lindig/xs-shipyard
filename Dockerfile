@@ -1,7 +1,7 @@
 # vim: set et:
 
-FROM                                    centos:7.2.1511
-MAINTAINER                              John Else <john.else@citrix.com>
+FROM        centos:7.2.1511
+MAINTAINER  Christian Lindig <christian.lindig@citrix.com>
 
 # set up yum repo
 COPY    files/RPM-GPG-KEY-Citrix-6.6    /etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
@@ -57,9 +57,10 @@ RUN echo 'builder ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/builder \
 &&  :
 
 WORKDIR /home/builder
-COPY    files/yum-setup yum-setup
 COPY    files/build build
 COPY    files/rpmmacros .rpmmacros
+COPY    files/yum-setup yum-setup
+RUN     ./yum-setup trunk-ring3
 RUN     chown -R builder:builder /home/builder
 
 # now become user builder

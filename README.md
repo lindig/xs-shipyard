@@ -54,7 +54,7 @@ On the host, do:
 
 Inside the container, do:
 
-    sudo ./citrix trunk-ring3           # if you work at Citrix
+    sudo ./yum-setup --citrix trunk-ring3           # if you work at Citrix
     ./build xenopds
 
 The `build` script executes these steps that you could also do manually:
@@ -108,7 +108,7 @@ Inside the container, do:
 
 The code is available under `/mnt`.
 
-    sudo ./citrix trunk-ring3  # if you work at Citrix
+    sudo ./yum-setup --citrix trunk-ring3  # if you work at Citrix
     sudo yum-builddep xenopsd
 
 The last step installs the dependencies. It assumes that the code in the
