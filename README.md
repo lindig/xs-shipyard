@@ -1,14 +1,16 @@
 <!-- vim: set ts=2 sw=2 et spell -->
 
-[![Build Status](https://travis-ci.org/lindig/xenserver-build-env.svg?branch=lindig)](https://travis-ci.org/lindig/xenserver-build-env)
+[![Build Status](https://travis-ci.org/lindig/xs-shipyard.svg?branch=master)](https://travis-ci.org/lindig/xs-shipyard)
 
-# xenserver-build-env
+# XenServer Shipyard
 
 This [Docker] configuration provides an environment for building
 XenServer packages.  By default, the container uses a Yum repository
 that comes from the nightly snapshot uploads to
 [xenserver.org](http://xenserver.org).  For developers inside Citrix it
 provides optional access to internal repositories.
+
+XenServer Shipyard is a fork of [xenserver-build-env].
 
 ## Building the Container
 
@@ -24,7 +26,7 @@ shared between host and container have the right identity.
 
 The name of the container image is:
 
-    xenserver-build-env:lindig
+    lindig/xs-shipyard
 
 ## Developing XenServer Packages - Overview
 
@@ -49,7 +51,7 @@ although it is not strictly necessary.
 
 On the host, do:
 
-    IMG=xenserver-build-env:lindig
+    IMG=lindig/xs-shipyard
     docker run -i -t -v $PWD:/mnt $IMG
 
 Inside the container, do:
@@ -101,7 +103,7 @@ Let's assume you want to build [xenopsd] from its sources on GitHub.
 On the host, do:
 
     git clone git://github.com/xapi-project/xenopsd.git
-    IMG=xenserver-build-env:lindig
+    IMG=lindig/xs-shipyard
     docker run -i -t -v $PWD:/mnt $IMG
 
 Inside the container, do:
@@ -134,8 +136,6 @@ install it. However, Opam does not interact nicely with Yum.
 
 ## Using Opam
 
-This is work in progress; explanation is forthcoming.
-
 To set up [OCaml] with Opam inside the container, do:
 
     sudo yum -y install ocaml
@@ -155,3 +155,4 @@ additional libraries and tools from the Opam ecosystem.
 [Docker]:   https://www.docker.com/
 [xenopsd]:  http://github.com/xapi-project/xenopsd
 [OCaml]:    http://www.ocaml.org/
+[xenserver-build-env]: http://github.com/xenserver/xenserver-build-env
