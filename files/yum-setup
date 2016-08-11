@@ -138,8 +138,6 @@ case "$CITRIX" in
     echo "$YUM_CONF_CITRIX" > $B/etc/yum.conf
     echo "$XS_REPO_CITRIX"  > $B/etc/yum.repos.d.xs/xs.repo
     echo "$CITRIX_REPO"     > $B/etc/yum.repos.d.xs/citrix.repo
-    cp  $B/etc/yum.repos.d/planex-release.repo \
-        $B/etc/yum.repos.d.xs/planex-release.repo
     ;;
   NO|no|*)
     mkdir -p                  $B/etc/yum.repos.d
