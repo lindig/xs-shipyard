@@ -4,7 +4,8 @@ FROM        centos:7.2.1511
 MAINTAINER  Christian Lindig <christian.lindig@citrix.com>
 
 # set up yum repo
-COPY    files/RPM-GPG-KEY-Citrix-6.6    /etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
+COPY    files/RPM-GPG-KEY-Citrix-6.6 \
+        /etc/pki/rpm-gpg/RPM-GPG-KEY-Citrix-6.6
 
 # Build requirements
 RUN     yum install -y \
@@ -12,30 +13,24 @@ RUN     yum install -y \
             gcc-c++ \
             git \
             make \
-            mercurial \
             mock \
             rpm-build \
             rpm-python \
             sudo \
             yum-utils \
-            epel-release
-
-# Niceties
-RUN     yum install -y \
+            epel-release \
             tig \
             tmux \
             vim \
             wget \
-            which
-
-# OCaml in XS is slightly older than in CentOS
-RUN     sed -i "/gpgkey/a exclude=ocaml*" /etc/yum.repos.d/Cent* /etc/yum.repos.d/epel*
-
-# Let's have aspcud
-RUN     yum install -y \
+            which \
             http://download.opensuse.org/repositories/home:/ocaml/CentOS_7/x86_64/aspcud-1.9.0-2.1.x86_64.rpm \
             http://download.opensuse.org/repositories/home:/ocaml/CentOS_7/x86_64/clasp-3.0.1-4.1.x86_64.rpm \
             http://download.opensuse.org/repositories/home:/ocaml/CentOS_7/x86_64/gringo-4.3.0-10.1.x86_64.rpm
+
+# OCaml in XS is slightly older than in CentOS
+RUN     sed -i "/gpgkey/a exclude=ocaml*" \
+        /etc/yum.repos.d/Cent* /etc/yum.repos.d/epel*
 
 # override these when building the container
 # docker build --build-arg uid=$(id -u) --build-arg gid=$(id -g) .
@@ -56,8 +51,9 @@ WORKDIR /home/builder
 COPY    files/build build
 COPY    files/rpmmacros .rpmmacros
 COPY    files/yum-setup yum-setup
-RUN     ./yum-setup trunk-ring3
-RUN     chown -R builder:builder /home/builder
+
+RUN     ./yum-setup trunk-ring3 \
+&&      chown -R builder:builder /home/builder
 
 # now become user builder
 USER    builder
