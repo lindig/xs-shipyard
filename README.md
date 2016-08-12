@@ -5,8 +5,8 @@
 # XenServer Shipyard
 
 This [Docker] configuration provides an environment for building
-XenServer packages.  By default, the container uses a Yum repository
-that comes from the nightly snapshot uploads to
+XenServer toolstack packages.  By default, the container uses a Yum
+repository that comes from the nightly snapshot uploads to
 [xenserver.org](http://xenserver.org).  For developers inside Citrix it
 provides optional access to internal repositories.
 
@@ -24,9 +24,13 @@ Build the docker image:
 The build takes into account your UID and GID to ensure that files
 shared between host and container have the right identity.
 
-The name of the container image is:
+The name of the container image is
 
     lindig/xs-shipyard
+
+and you can download pre-built containers from Docker:
+
+    docker pull lindig/xs-shipyard
 
 ## Developing XenServer Packages - Overview
 
