@@ -24,13 +24,17 @@ Build the docker image:
 The build takes into account your UID and GID to ensure that files
 shared between host and container have the right identity.
 
-The name of the container image is
+The name of the container image is;
 
     lindig/xs-shipyard
 
-and you can download pre-built containers from Docker:
+You can also download pre-built containers from Docker:
 
     docker pull lindig/xs-shipyard
+
+A pre-built container has the disadvantage that the files it creates in
+a mounted volume don't have your UID/GID but 1000/1000. Therefore I
+recommend building the container from the Dockerfile.
 
 ## Developing XenServer Packages - Overview
 
