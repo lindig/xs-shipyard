@@ -2,7 +2,7 @@
 # Build Docker container for developing XenServer packages
 #
 
-NAME = lindig/xs-shipyard:travis
+NAME = lindig/xs-shipyard
 ARGS += --build-arg uid=$$(id -u)
 ARGS += --build-arg gid=$$(id -g)
 
