@@ -15,5 +15,5 @@ all:	Dockerfile
 
 %:
 	( echo "FROM $(NAME)"; \
-		echo "RUN sudo ./yum-setup --citrix"; \
-		echo "RUN sudo yum-builddep -y $@" ) | docker build -t $(NAME)-$@ -
+	echo "RUN sudo ./yum-setup --citrix"; \
+	echo "RUN sudo yum-builddep -y $@" ) | docker build -t $(NAME)-$@ -
