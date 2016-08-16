@@ -14,6 +14,6 @@ all:	Dockerfile
 # These are set up to be used inside Citrix
 
 %:
-	( echo "FROM lindig/xs-shipyard"; \
+	( echo "FROM $(NAME)"; \
 		echo "RUN sudo ./yum-setup --citrix"; \
 		echo "RUN sudo yum-builddep -y $@" ) | docker build -t $(NAME)-$@ -
