@@ -1,6 +1,6 @@
 # vim: set et:
 
-FROM        centos:7
+FROM        centos:7.2.1511
 MAINTAINER  Christian Lindig <christian.lindig@citrix.com>
 
 # set up yum repo
