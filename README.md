@@ -1,6 +1,7 @@
 <!-- vim: set ts=2 sw=2 et spell -->
 
 [![Build Status](https://travis-ci.org/lindig/xs-shipyard.svg?branch=master)](https://travis-ci.org/lindig/xs-shipyard)
+[![Docker Layers](https://images.microbadger.com/badges/image/lindig/xs-shipyard.svg)](https://microbadger.com/images/lindig/xs-shipyard)
 
 # XenServer Shipyard
 
