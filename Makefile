@@ -17,3 +17,14 @@ all:	Dockerfile
 	( echo "FROM $(NAME)"; \
 	echo "RUN sudo ./yum-setup --citrix"; \
 	echo "RUN sudo yum-builddep -y $@" ) | docker build -t $(NAME)-$@ -
+
+pvs:
+	( echo "FROM $(NAME)"; \
+	echo "RUN sudo ./yum-setup --citrix trunk-pvs-direct"; \
+	echo "RUN sudo yum-builddep -y xapi" ) | docker build -t $(NAME)-$@ -
+
+rrd:
+	( echo "FROM $(NAME)"; \
+	echo "RUN sudo ./yum-setup --citrix"; \
+	echo "RUN sudo yum install -y ocaml-rrd-transport-devel ocaml-inotify-devel" ) \
+	| docker build -t $(NAME)-$@ -
