@@ -66,7 +66,7 @@ On the host, do:
 Inside the container, do:
 
     sudo ./yum-setup --citrix trunk-ring3           # if you work at Citrix
-    ./build xenopds
+    ./build xenopsd
 
 The `build` script executes these steps that you could also do manually:
 
