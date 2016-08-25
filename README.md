@@ -152,7 +152,7 @@ To set up [OCaml] with Opam inside the container, do:
     sudo yum -y install opam
     opam init
     eval $(opam config env)
-    sed -i.bak '/path/s!"$!:/home/builder/.opam/system/lib"!' /etc/ocamlfind.conf
+    sudo sed -i.bak '/path/s!"$!:/home/builder/.opam/system/lib"!' /etc/ocamlfind.conf
 
 The last line ensures that [OCaml] packages (and libraries) installed
 via Yum and those installed via Opam are both visible to OCamlfind, which
