@@ -2,6 +2,9 @@
 # Build Docker container for developing XenServer packages
 #
 
+CITRIX = --citrix
+BRANCH = trunk-ring3
+
 NAME = lindig/xs-shipyard
 ARGS += --build-arg uid=$$(id -u)
 ARGS += --build-arg gid=$$(id -g)
@@ -15,13 +18,8 @@ all:	Dockerfile
 
 %:
 	( echo "FROM $(NAME)"; \
-	echo "RUN sudo ./yum-setup --citrix"; \
+	echo "RUN sudo ./yum-setup $(CITRIX) $(BRANCH)"; \
 	echo "RUN sudo yum-builddep -y $@" ) | docker build -t $(NAME)-$@ -
-
-pvs:
-	( echo "FROM $(NAME)"; \
-	echo "RUN sudo ./yum-setup --citrix trunk-pvs-direct"; \
-	echo "RUN sudo yum-builddep -y xapi" ) | docker build -t $(NAME)-$@ -
 
 # 
 # create a container with Opam set up.
@@ -35,7 +33,7 @@ OPAM_SED = /path/s!ocaml!ocaml:/home/builder/.opam/system/lib!
 
 opam:
 	( echo "FROM $(NAME)"; \
-	echo 'RUN sudo ./yum-setup --citrix';\
+	echo 'RUN sudo ./yum-setup $(CITRIX) $(BRANCH)';\
 	echo 'RUN sudo yum install -y $(OPAM)';\
 	echo "RUN sudo sed -i.bak '$(OPAM_SED)' /etc/ocamlfind.conf" ;\
 	echo 'RUN opam init --no-setup';\
