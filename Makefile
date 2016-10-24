@@ -19,7 +19,7 @@ all:	Dockerfile
 %:
 	( echo "FROM $(NAME)"; \
 	echo "RUN sudo ./yum-setup $(CITRIX) $(BRANCH)"; \
-	echo "RUN sudo yum-builddep -y $@" ) | docker build -t $(NAME)-$@ -
+	echo "RUN sudo yum-builddep -y $@" ) | docker build -t $(NAME)-$@:$(BRANCH) -
 
 # 
 # create a container with Opam set up.
@@ -38,4 +38,4 @@ opam:
 	echo "RUN sudo sed -i.bak '$(OPAM_SED)' /etc/ocamlfind.conf" ;\
 	echo 'RUN opam init --no-setup';\
 	echo 'RUN eval $$(opam config env)';\
-	) | docker build -t $(NAME)-$@ -
+	) | docker build -t $(NAME)-$@:$(BRANCH) -

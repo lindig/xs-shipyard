@@ -113,6 +113,16 @@ Inside the container:
     cd /mnt
     make
 
+## Using Branches
+
+By default, images are built using packages from the `trunk-ring3`
+product branch. To use a different product branch, do:
+
+    make BRANCH=trunk-ppx xenopsd
+
+This will create an image for building `xenopsd` using the `trunk-ppx`
+to download dependencies.
+
 ## Using Opam
 
 To set up [OCaml] with Opam inside the container, do:
