@@ -97,13 +97,13 @@ You will notice that developing a packages requires to install a large
 number of packages inside the container. The `Makefile` supports this by
 creating Docker images that already have these installed:
 
-    make xapi 
+    make xapi
     make CITRIX= xapi       # when working outside citrix
 
 This creates a container `lindig/xs-shipyard-xapi` that has all packages
 pre-installed for compiling the `xapi` component:
 
-    make xapi 
+    make xapi
     git clone git://github.com/xapi-project/xen-api.git
     cd xen-api
     docker run --rm -itv $PWD:/mnt lindig/xs-shipyard-xapi

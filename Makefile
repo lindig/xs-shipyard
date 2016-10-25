@@ -17,22 +17,24 @@ all:	Dockerfile
 # These are set up to be used inside Citrix
 
 %:
-	( echo "FROM $(NAME)"; \
-	echo "RUN sudo ./yum-setup $(CITRIX) $(BRANCH)"; \
-	echo "RUN sudo yum-builddep -y $@" ) | docker build -t $(NAME)-$@:$(BRANCH) -
+	( echo "FROM $(NAME)";\
+	echo "RUN sudo ./yum-setup $(CITRIX) $(BRANCH)";\
+	echo "RUN sudo yum-builddep -y $@";\
+	) | docker build -t $(NAME)-$@:$(BRANCH) -
 
-# 
+#
 # create a container with Opam set up.
 #
 
 OPAM += opam
 OPAM += ocaml
 OPAM += ocaml-findlib-devel
+OPAM += m4
 
 OPAM_SED = /path/s!ocaml!ocaml:/home/builder/.opam/system/lib!
 
 opam:
-	( echo "FROM $(NAME)"; \
+	( echo "FROM $(NAME)";\
 	echo 'RUN sudo ./yum-setup $(CITRIX) $(BRANCH)';\
 	echo 'RUN sudo yum install -y $(OPAM)';\
 	echo "RUN sudo sed -i.bak '$(OPAM_SED)' /etc/ocamlfind.conf" ;\
