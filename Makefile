@@ -66,14 +66,7 @@ ppx:
 	) | docker build -t $(NAME)-ppx:$(BRANCH) -
 
 ppx/%:
-	( echo "FROM $(NAME)";\
-	echo 'RUN sudo ./yum-setup $(CITRIX) $(BRANCH)';\
-	echo 'RUN sudo yum install -y $(PPX)';\
-	echo "# RUN sudo sed -i.bak '$(PPX_SED)' /etc/ocamlfind.conf" ;\
-	echo 'RUN opam init --no-setup --comp $(PPX_OCAML)';\
-	echo 'RUN opam repo add -y -k git citrix $(PPX_OPAM)' ;\
-	echo 'RUN opam install -y ocamlfind' ;\
-	echo 'RUN opam install -y depext';\
+	( echo "FROM $(NAME)-ppx:$(BRANCH)";\
 	echo 'RUN .opam/$(PPX_OCAML)/bin/opam-depext $(@F)' ;\
 	echo 'RUN opam install -y --deps-only $(@F)';\
 	echo 'ENTRYPOINT [ "opam", "config", "exec", "--" ]' ;\
