@@ -22,6 +22,27 @@ all:	Dockerfile
 	echo "RUN sudo yum-builddep -y $@";\
 	) | docker build -t $(NAME)-$@:$(BRANCH) -
 
+# v6d depends on non-public RPMs. We build a container that includes
+# all public RPMs and add the non-public ones manually.
+
+V6D +=  libdb-devel
+V6D +=  oasis
+V6D +=  ocaml
+V6D +=  ocaml-findlib
+V6D +=  ocaml-getopt
+V6D +=  ocaml-stdext-devel
+V6D +=  ocaml-systemd-devel
+V6D +=  ocaml-type-conv
+V6D +=  ocaml-xen-api-libs-transitional-devel
+V6D +=  xapi-client-devel
+
+v6d:
+	( echo "FROM $(NAME)";\
+	echo "RUN sudo ./yum-setup $(CITRIX) $(BRANCH)";\
+	echo "RUN sudo yum install -y $(V6D)";\
+	) | docker build -t $(NAME)-$@:$(BRANCH) -
+
+
 #
 # create a container with Opam set up.
 #
