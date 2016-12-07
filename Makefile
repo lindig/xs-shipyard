@@ -17,10 +17,12 @@ all:	Dockerfile
 # These are set up to be used inside Citrix
 
 %:
+	@test `dirname $@` != . || (echo "use: $(MAKE) trunk-ring3/$@"; false) 
 	( echo "FROM $(NAME)";\
-	echo "RUN sudo ./yum-setup $(CITRIX) $(BRANCH)";\
-	echo "RUN sudo yum-builddep -y $@";\
-	) | docker build -t $(NAME)-$@:$(BRANCH) -
+	echo "RUN sudo ./yum-setup $(CITRIX) $(@D)";\
+	echo "RUN sudo yum-builddep -y $(@F)";\
+	) | docker build -t $(NAME)-$(@F):$(@D) -
+
 
 # v6d depends on non-public RPMs. We build a container that includes
 # all public RPMs and add the non-public ones manually.
@@ -82,6 +84,7 @@ ppx:
 	echo 'RUN opam repo add -k git citrix $(PPX_OPAM)' ;\
 	echo 'RUN opam install -y ocamlfind' ;\
 	echo 'RUN opam install -y depext';\
+	echo 'RUN eval $$(opam config env)';\
 	echo 'ENTRYPOINT [ "opam", "config", "exec", "--" ]' ;\
 	echo 'CMD ["bash"]' ;\
 	) | docker build -t $(NAME)-ppx:$(BRANCH) -
