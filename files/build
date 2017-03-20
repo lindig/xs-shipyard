@@ -14,6 +14,10 @@ build()
 {
   package="$1"
   sudo yum-builddep -y ${package}
+  if test -f /etc/profile.d/opam.sh -a -z "$OPAMROOT"
+  then
+    . /etc/profile.d/opam.sh
+  fi
   yumdownloader --source ${package}
   rpm -i ${package}*
   rpmbuild -ba ${topdir}/SPECS/${package}.spec
