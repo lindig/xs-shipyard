@@ -8,10 +8,11 @@
 This [Docker] configuration provides an environment for building
 XenServer toolstack packages.  By default, the container uses a Yum
 repository that comes from the nightly snapshot uploads to
-[xenserver.org](http://xenserver.org).  For developers inside Citrix it
-provides optional access to internal repositories.
+[xenserver.org](http://xenserver.org).
 
-XenServer Shipyard is a fork of [xenserver-build-env].
+XenServer Shipyard is a fork of [xenserver-build-env]. For work inside
+Citrix I recommend using `planex-buildenv` which also builds docker
+containers for building toolstack components.
 
 ## Building the Container
 
@@ -67,13 +68,13 @@ Inside the container, do:
 
 The code is available under `/mnt`.
 
-    sudo ./yum-setup --citrix trunk-ring3  # if you work at Citrix
     sudo yum-builddep xenopsd
 
 The last step installs the dependencies. It assumes that the code in the
 GitHub repository doesn't need additional packages.
 
     cd /mnt
+    . /etc/profile.d/opam.sh
     ./configure
     make
 
@@ -97,237 +98,22 @@ You will notice that developing a packages requires to install a large
 number of packages inside the container. The `Makefile` supports this by
 creating Docker images that already have these installed:
 
-    make trunk-ring3/xapi
-    make CITRIX= xapi       # when working outside citrix
+    make ring3/xapi
 
-This creates a container `lindig/xs-shipyard-xapi:trunk-ring3` that has
+This creates a container `lindig/xs-shipyard-xapi:ring3` that has
 all packages pre-installed for compiling the `xapi` component:
 
-    make trunk-ring3/xapi
     git clone git://github.com/xapi-project/xen-api.git
     cd xen-api
-    docker run --rm -itv $PWD:/mnt lindig/xs-shipyard-xapi
+    docker run --rm -itv $PWD:/mnt lindig/xs-shipyard-xapi:ring3
 
 Inside the container:
 
     cd /mnt
+    . /etc/profile.d/opam.sh
     make
 
-## Using Opam
 
-To set up [OCaml] with Opam inside the container, do:
-
-    make opam             # when working inside citrix
-    make CITRIX= opam     # when working outside citrix
-
-This creates an image lindig/xs-shipyard-opam which has Opam installed.
-This is achieved by running the following commands as part of the build
-
-    sudo yum -y install ocaml
-    sudo yum -y install ocaml-findlib-devel
-    sudo yum -y install opam
-    opam init
-    eval $(opam config env)
-    sudo sed -i.bak '/path/s!"$!:/home/builder/.opam/system/lib"!' /etc/ocamlfind.conf
-
-The last line ensures that [OCaml] packages (and libraries) installed
-via Yum and those installed via Opam are both visible to OCamlfind, which
-is responsible for locating libraries for the compiler. The `sed`
-command extends the search path for libraries. You can now install
-additional libraries and tools from the Opam ecosystem.
-
-## Building a Package from its SRPM
-
-Let's assume you want to build [xenopsd] from its source code package.
-I suggest to mount a local directory into the container under `/mnt`
-although it is not strictly necessary.
-
-On the host, do:
-
-    IMG=lindig/xs-shipyard
-    docker run -i -t -v $PWD:/mnt $IMG
-
-Inside the container, do:
-
-    sudo ./yum-setup --citrix trunk-ring3           # if you work at Citrix
-    ./build xenopsd
-
-The `build` script executes these steps that you could also do manually:
-
-    sudo yum-builddep xenopsd
-    yumdownloader --source xenopsd
-    rpm -i xenopsd*
-    rpmbuild -ba /mnt/rpmbuild/SPECS/xenopsd.spec # builds it as a package
-
-The results are under /mnt/rpmbuild -- see below. Usually `rpm` creates
-`$HOME/rpmbuild` but we are using a modified `%_topdir /mnt/rpmbuild`
-definition (in `$HOME/.rpmmacros`) to direct the RPM hierarchy to `/mnt`
-which can be shared with the host.
-
-    New RPMs built
-    ./RPMS/x86_64/xenopsd-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
-    ./RPMS/x86_64/xenopsd-debuginfo-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
-    ./RPMS/x86_64/xenopsd-simulator-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
-    ./RPMS/x86_64/xenopsd-xc-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
-    ./RPMS/x86_64/xenopsd-xc-cov-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
-    ./RPMS/x86_64/xenopsd-xenlight-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.x86_64.rpm
-
-    Build directory with all code
-    ./BUILD/xenopsd-0.12.1/.......
-
-    ./SOURCES/xenopsd-0.12.0+107+ge1ebb93.tar.gz
-    ./SOURCES/xenopsd-64-conf
-    ./SOURCES/xenopsd-conf
-    ./SOURCES/xenopsd-libvirt-init
-    ./SOURCES/xenopsd-network-conf
-    ./SOURCES/xenopsd-simulator-init
-    ./SOURCES/xenopsd-xc-init
-    ./SOURCES/xenopsd-xenlight-init
-
-    ./SPECS/xenopsd.spec
-
-    ./SRPMS/xenopsd-0.12.1-1+s0+0.12.0+107+ge1ebb93.el7.centos.src.rpm
-
-
-# List of Packages
-
-It is not obvious which packages can be built using these images. Here
-is an incomplete list:
-
-    cppo
-    ezlvm
-    ffs
-    forkexecd
-    gdk
-    gpumon
-    message-switch
-    oasis
-    ocaml
-    ocaml-async
-    ocaml-async-extra
-    ocaml-async-find
-    ocaml-async-inotify
-    ocaml-async-kernel
-    ocaml-async-rpc-kernel
-    ocaml-async-unix
-    ocaml-backtrace
-    ocaml-base64
-    ocaml-biniou
-    ocaml-bin-prot
-    ocaml-bisect-ppx
-    ocaml-bisect-summary
-    ocaml-camldm
-    ocaml-camlp4
-    ocaml-cdrom
-    ocaml-cmdliner
-    ocaml-cohttp
-    ocaml-comparelib
-    ocaml-conduit
-    ocaml-core
-    ocaml-core-kernel
-    ocaml-cow
-    ocaml-crc
-    ocaml-cstruct
-    ocaml-ctypes
-    ocaml-custom-printf
-    ocaml-dyntype
-    ocaml-easy-format
-    ocaml-enumerate
-    ocaml-ezjsonm
-    ocaml-fd-send-recv
-    ocaml-fieldslib
-    ocaml-fileutils
-    ocaml-findlib
-    ocaml-flock
-    ocaml-getopt
-    ocaml-gnt
-    ocaml-herelib
-    ocamlify
-    ocaml-inotify
-    ocaml-io-page
-    ocaml-ipaddr
-    ocaml-jsonm
-    ocaml-libvhd
-    ocaml-lwt
-    ocaml-mirage-block-unix
-    ocaml-mirage-clock-unix
-    ocaml-mirage-profile
-    ocaml-mirage-types
-    ocamlmod
-    ocaml-mtime
-    ocaml-nbd
-    ocaml-netdev
-    ocaml-netlink
-    ocaml-obuild
-    ocaml-oclock
-    ocaml-ocplib-endian
-    ocaml-odn
-    ocaml-omd
-    ocaml-opasswd
-    ocaml-ounit
-    ocaml-pa-bench
-    ocaml-pa-ounit
-    ocaml-pa-pipebang
-    ocaml-pa-structural-sexp
-    ocaml-pa-test
-    ocaml-pci
-    ocaml-ppxtools
-    ocaml-qmp
-    ocaml-re
-    ocaml-react
-    ocaml-rpc
-    ocaml-rrdd-plugin
-    ocaml-rrd-transport
-    ocamlscript
-    ocaml-sexplib
-    ocaml-sha
-    ocaml-shared-block-ring
-    ocaml-ssl
-    ocaml-stdext
-    ocaml-stringext
-    ocaml-systemd
-    ocaml-tapctl
-    ocaml-tar
-    ocaml-text
-    ocaml-type-conv
-    ocaml-typerep
-    ocaml-ulex
-    ocaml-uri
-    ocaml-uuidm
-    ocaml-uutf
-    ocaml-variantslib
-    ocaml-vhd
-    ocaml-xcp-idl
-    ocaml-xcp-inventory
-    ocaml-xcp-rrd
-    ocaml-xen-api-client
-    ocaml-xen-api-libs-transitional
-    ocaml-xenops
-    ocaml-xenstore
-    ocaml-xenstore-clients
-    ocaml-xmlm
-    ocaml-yojson
-    omake
-    opam
-    optcomp
-    rrd2csv
-    rrd-client-lib
-    rrdd-plugins
-    sm-cli
-    squeezed
-    stunnel_xs
-    vhd-tool
-    xapi
-    xapi-storage
-    xapi-storage-datapath-plugins
-    xapi-storage-script
-    xapi-test-utils
-    xcp-networkd
-    xcp-rrdd
-    xenops-cli
-    xenopsd
-    xsifstat
-    xsiostat
 
 [Docker]:   https://www.docker.com/
 [xenopsd]:  http://github.com/xapi-project/xenopsd

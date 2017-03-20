@@ -52,7 +52,7 @@ COPY    files/build build
 COPY    files/rpmmacros .rpmmacros
 COPY    files/yum-setup yum-setup
 
-RUN     ./yum-setup trunk-ring3 \
+RUN     ./yum-setup \
 &&      chown -R builder:builder /home/builder
 
 # now become user builder
