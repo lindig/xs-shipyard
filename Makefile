@@ -17,7 +17,7 @@ all:	Dockerfile
 	@test `dirname $@` != . || (echo "use: $(MAKE) trunk-ring3/$@"; false)
 	( echo "FROM $(NAME)";\
 	echo "RUN sudo ./yum-setup $(@D)";\
-	echo "RUN sudo yum-builddep -y $(@F)";\
+	echo "RUN sudo yum-builddep -y $(@F) || true";\
 	) | docker build -t $(NAME)-$(@F):$(@D) -
 
 
