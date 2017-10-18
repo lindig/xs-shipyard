@@ -13,16 +13,17 @@ XenServer Shipyard is a fork of [xenserver-build-env]. For work inside
 Citrix I recommend using `planex-buildenv` which also builds docker
 containers for building toolstack components.
 
-**This Docker configuration as of 27 March 2017 does not work reliably.
-The official build of XenServer relies on a patched CentOS base image
-that isn't publically available. This creates incompatibilities between
-binaries created with this Docker image and binaries created with
-official builds. In can be still used to compile code, though.**
+**This Docker configuration cannot be used to create binaries
+that are 100% compatible with official ones. Recent official builds of
+XenServer rely on a patched CentOS base image. This creates
+incompatibilities between binaries created with this Docker image and
+binaries created with official builds. This Docker configuration is
+still good for development.**
 
 ## Building and Using the Container
 
 The main use case is to create a container that provides all
-dependencies such that a given component can be built inside of it. 
+dependencies such that a given component can be built inside of it.
 
 ```sh
 make dundee-bugfix/xenopsd
