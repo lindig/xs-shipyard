@@ -8,43 +8,40 @@
 
 set -e
 
-BRANCH="${BRANCH:-ring3}"
-
-
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 1>&2
    exit 1
 fi
 
-KEY="aHR0cDovL3hzLXl1bS1yZXBvcy5zMy13ZWJzaXRlLXVzLWVhc3QtMS5hbWF6b25hd3MuY29tLzEzMzdhYjZjLTc3YWItOWM4Yy1hOTFmLTM4ZmJhOGJlZThkZC9kb21haW4w"
-while [[ $# -ge 1 ]]; do
-  case "$1" in
-    ely-bugfix)
-      KEY="aHR0cDovL3hzLXl1bS1yZXBvcy5zMy13ZWJzaXRlLXVzLWVhc3QtMS5hbWF6b25hd3MuY29tLzQ0OWU1MmE0LTI3MWEtNDgzYS1iYWE3LTI0YmYzNjI4NjZmNy9kb21haW4w"
-      BRANCH="$1"
-      shift
-      ;;
+case "$1" in
+  dundee-bugfix)
+    KEY=aHR0cDovL3hhcGktcmVwb3MuczMtd2Vic2l0ZS11cy1lYXN0LTEuYW1hem9uYXdzLmNvbS9kOGJjOGVkZi1lOGMyLTRiNmQtYjgyZi0yNGQ2NzQyZWE4YmMvZG9tYWluMA==
+    ;;
+  ely-bugfix)
+    KEY=aHR0cDovL3hhcGktcmVwb3MuczMtd2Vic2l0ZS11cy1lYXN0LTEuYW1hem9uYXdzLmNvbS80NDllNTJhNC0yNzFhLTQ4M2EtYmFhNy0yNGJmMzYyODY2ZjcvZG9tYWluMA==
+    ;;
+  falcon)
+    KEY=aHR0cDovL3hhcGktcmVwb3MuczMtd2Vic2l0ZS11cy1lYXN0LTEuYW1hem9uYXdzLmNvbS9mYTdjMGVhOS05ZDMxLTUwYmItYThkNi04YWUzNjdlZjJmMTQvZG9tYWluMA==
+    ;;
+  feature-CBT)
+    KEY=aHR0cDovL3hhcGktcmVwb3MuczMtd2Vic2l0ZS11cy1lYXN0LTEuYW1hem9uYXdzLmNvbS9mZWE3NjJlNy1jYjcwLTRiZTktZWY4Ni00M2FlODlmOTFjZDIvZG9tYWluMA==
+    ;;
+  qemu-upstream)
+    KEY=aHR0cDovL3hhcGktcmVwb3MuczMtd2Vic2l0ZS11cy1lYXN0LTEuYW1hem9uYXdzLmNvbS83ZWEzNzIxMi05MDc5LWUzMjEtNTdhYi0xZTQ5ZWFmYzBkY2YvZG9tYWluMA==
+    ;;
+  vgpu-migration)
+    KEY=aHR0cDovL3hhcGktcmVwb3MuczMtd2Vic2l0ZS11cy1lYXN0LTEuYW1hem9uYXdzLmNvbS9hNjIxMTk2MS04ZGFkLTQzYjctOGFlMy1iOTQ0YzIxNzkxNGEvZG9tYWluMA==
+    ;;
+  usb-passthrough)
+    KEY=aHR0cDovL3hhcGktcmVwb3MuczMtd2Vic2l0ZS11cy1lYXN0LTEuYW1hem9uYXdzLmNvbS8wMDViYmE1Mi03ZmIzLTlhMmMtZDY5MS1hOGI1Yjg5N2NmZjMvZG9tYWluMA==
+    ;;
+  *)
+    KEY=aHR0cDovL3hhcGktcmVwb3MuczMtd2Vic2l0ZS11cy1lYXN0LTEuYW1hem9uYXdzLmNvbS8xMzM3YWI2Yy03N2FiLTljOGMtYTkxZi0zOGZiYThiZWU4ZGQvZG9tYWluMA==
+  ;;
+esac
 
-    dundee-bugfix)
-      KEY="aHR0cDovL3hhcGktcmVwb3MuczMtd2Vic2l0ZS11cy1lYXN0LTEuYW1hem9uYXdzLmNvbS9kOGJjOGVkZi1lOGMyLTRiNmQtYjgyZi0yNGQ2NzQyZWE4YmMvZG9tYWluMA=="
-      BRANCH="$1"
-      shift
-      ;;
-
-    falcon)
-      KEY="aHR0cDovL3hhcGktcmVwb3MuczMtd2Vic2l0ZS11cy1lYXN0LTEuYW1hem9uYXdzLmNvbS9mYTdjMGVhOS05ZDMxLTUwYmItYThkNi04YWUzNjdlZjJmMTQvZG9tYWluMA=="
-      BRANCH="$1"
-      shift
-      ;;
-
-    *)
-      BRANCH="$1"
-      shift
-      ;;
-  esac
-done
-echo "BRANCH=$BRANCH"
 YUM="$(echo $KEY | base64 --decode)"
+echo "$YUM"
 
 YUM_CONF_PUBLIC='
 [main]
